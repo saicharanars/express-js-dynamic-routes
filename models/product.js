@@ -1,50 +1,27 @@
-const fs = require("fs");
-const path = require("path");
-const Cart = require("./cart");
-const db = require("../util/database");
-const p = path.join(
-  path.dirname(process.mainModule.filename),
-  "data",
-  "products.json"
-);
+const Sequelize = require("sequelize");
 
-const getProductsFromFile = (cb) => {
-  fs.readFile(p, (err, fileContent) => {
-    if (err) {
-      cb([]);
-    } else {
-      cb(JSON.parse(fileContent));
-    }
-  });
-};
+const sequelize = require("../util/database");
 
-module.exports = class Product {
-  constructor(id, title, imageUrl, description, price) {
-    this.id = id;
-    this.title = title;
-    this.imageUrl = imageUrl;
-    this.description = description;
-    this.price = price;
-  }
+const Product = sequelize.define("products",{
+  id:{
+    type:Sequelize.INTEGER,
+    autoIncrement:true,
+    allowNull:false,
+    primaryKey:true
+  },
+  title: Sequelize.STRING,
+  price: {
+    type: Sequelize.DOUBLE,
+    allowNull: false,
+  },
+  imageUrl: {
+    type: Sequelize.STRING,
+    allowNull: false,
+  },
+  description: {
+    type: Sequelize.STRING,
+    allowNull: false,
+  },
 
-  save() {
-    return db.execute(
-      "INSERT INTO products(title,imageUrl,description,price) VALUES(?,?,?,?)",
-      [this.title, this.imageUrl, this.description, this.price]
-    );
-  }
-  static deleteById(id) {
-    return db.execute("DELETE FROM products WHERE id = ?", [id]);
-  }
-
-  static fetchAll(cb) {
-    return db.execute("SELECT * FROM products");
-  }
-  static findById(id, cb) {
-    getProductsFromFile((products) => {
-      const product = products.find((p) => p.id === id);
-      console.log(product);
-      cb(product);
-    });
-  }
-};
+})
+module.exports = Product;
