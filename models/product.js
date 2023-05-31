@@ -22,6 +22,6 @@ const Product = sequelize.define("products",{
     type: Sequelize.STRING,
     allowNull: false,
   },
-
+ 
 })
 module.exports = Product;

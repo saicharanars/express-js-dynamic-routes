@@ -12,7 +12,8 @@ exports.getEditProduct = (req, res, next) => {
     res.redirect("/");
   }
   const prodId = req.params.productId;
-  Product.findById(prodId, (product) => {
+  req.user.getProducts({where:{id:prodId}}).then(product=>{
+    const product=products[0];
     if (!product) {
       return res.redirect("/");
     }
@@ -22,7 +23,10 @@ exports.getEditProduct = (req, res, next) => {
       editing: editMode,
       product: product,
     });
-  });
+  })
+  // Product.findById(prodId, (product) => {
+    
+  
 };
 exports.postEditProduct = (req, res, next) => {
   console.log("Tried to edit!");
@@ -43,11 +47,13 @@ exports.postAddProduct = (req, res, next) => {
   const imageUrl = req.body.imageUrl;
   const price = req.body.price;
   const description = req.body.description;
+  //req.user.createProduct();
   Product.create({
     title: title,
     price: price,
     imageUrl: imageUrl,
     description: description,
+    UserId:req.user.id,
   })
     .then((result) => {
       console.log(result);
